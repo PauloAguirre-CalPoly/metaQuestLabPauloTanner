@@ -4,7 +4,11 @@ public class MotivController implements MouseListener, MouseMotionListener, Comp
 
     @Override
     public void componentResized(ComponentEvent e) {
-
+        // update the window size
+        MotivData.getInstance().setWSize(e.getComponent().getWidth(), e.getComponent().getHeight());
+        // create new circles based on size
+        MotivData.getInstance().getBallList().clear();
+        MotivData.getInstance().createCircles();
     }
 
     @Override
