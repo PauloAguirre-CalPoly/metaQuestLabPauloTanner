@@ -37,7 +37,7 @@ public class MotivMain extends JFrame {
 
         MotivMain main = new MotivMain();
         main.setTitle("Motive Tester");
-        main.setSize(800, 600);
+        main.setSize(700, 700);
         main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         main.setVisible(true);
     }

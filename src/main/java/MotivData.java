@@ -22,7 +22,7 @@ public class MotivData extends PropertyChangeSupport {
         stream = new ArrayList<>();
     }
 
-    public void addData(String str){
+    public void addData(String str) {
         stream.add(str);
     }
 
@@ -38,10 +38,22 @@ public class MotivData extends PropertyChangeSupport {
     }
 
     public void createCircles() {
-        ballList.add(new Circle(150, 250));
-        ballList.add(new Circle(300, 250));
-        ballList.add(new Circle(450, 250));
-        ballList.add(new Circle(600, 250));
+        int centerX = wWidth / 2;
+        int centerY = wHeight / 2;
+        int offset = 250;
+
+        // north
+        ballList.add(new Circle(centerX, centerY - offset));
+        // west
+        ballList.add(new Circle(centerX - offset, centerY));
+        // east
+        ballList.add(new Circle(centerX + offset, centerY));
+        // south
+        ballList.add(new Circle(centerX, centerY + offset));
+        //        ballList.add(new Circle(150, 250));
+        //        ballList.add(new Circle(300, 250));
+        //        ballList.add(new Circle(450, 250));
+        //        ballList.add(new Circle(600, 250));
     }
 
     public void setWSize(int wWidth, int wHeight) {
