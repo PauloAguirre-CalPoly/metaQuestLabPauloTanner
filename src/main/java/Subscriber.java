@@ -1,14 +1,6 @@
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
-
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * This class is a simple MQTT subscriber that listens to a TOPIC.
@@ -33,7 +25,6 @@ public class Subscriber implements MqttCallback, Runnable {
 	private final static String BROKER = "tcp://test.mosquitto.org:1883";
 	private final static String TOPIC = "Lab5_Tanner_Paulo";
 	private final static String CLIENT_ID = "jgs-subscriber";
-	//public static BufferedWriter out = null;
 
 	@Override
 	public void run() {
@@ -53,7 +44,8 @@ public class Subscriber implements MqttCallback, Runnable {
 
 	}
 
-	private float[] computeFixationPoint(float[] leftEyePos, float[] leftGazeDir, float[] rightEyePos, float[] rightGazeDir) {
+	private float[] computeFixationPoint(float[] leftEyePos, float[] leftGazeDir,
+										 float[] rightEyePos, float[] rightGazeDir) {
 		float minDepth = 1.2f;  // Minimum fixation depth
 		float maxDepth = 3.5f;  // Maximum reasonable depth
 
@@ -109,8 +101,6 @@ public class Subscriber implements MqttCallback, Runnable {
 
 	private void parseData(String jsonData) {
 		try {
-			//File file = new File("testData.json");
-			//String jsonData = new String(Files.readAllBytes(Paths.get("testData.json")));
 			JSONObject obj = new JSONObject(jsonData);
 
 			JSONObject torso = obj.getJSONObject("torso");
