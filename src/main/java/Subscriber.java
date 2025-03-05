@@ -151,6 +151,7 @@ public class Subscriber implements MqttCallback, Runnable {
 			fixationZ = fixationPoint[2];
 			MotivData.getInstance().setEyeFixation(fixationX);
 			MotivData.getInstance().setArmHeight(rightHandY);
+			MotivData.getInstance().setCSize(torsoY);
 			MotivData.getInstance().repaint();
 			Thread.sleep(1000);
 			//add MotivData here

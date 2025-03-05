@@ -25,5 +25,8 @@ public class Circle {
     public void setColor(int num){
         color = num;
     }
+    public void setDiameter(int num){
+        this.diameter = num;
+    }
 
 }

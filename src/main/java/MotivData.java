@@ -16,6 +16,7 @@ public class MotivData extends PropertyChangeSupport {
     private float eyeFixationX;
     private float armHeight;
     private int binColor;
+    private float cSize;
 
     public MotivData(int nCircle) {
         super(new Object());
@@ -65,9 +66,11 @@ public class MotivData extends PropertyChangeSupport {
     public void computeCircle(Graphics g){
         computeBinary();
         if(eyeFixationX < 0 ){
+            ballList.get(3).setDiameter(computeCircleSize());
             ballList.get(3).setColor(binColor);
             ballList.get(3).drawCircle(g);
         }else{
+            ballList.get(0).setDiameter(computeCircleSize());
             ballList.get(0).setColor(binColor);
             ballList.get(0).drawCircle(g);
         }
@@ -82,6 +85,17 @@ public class MotivData extends PropertyChangeSupport {
             binColor = 0;
         }else{
             binColor = 1;
+        }
+    }
+
+    public void setCSize(float cSize) {
+        this.cSize = cSize;
+    }
+    public int computeCircleSize(){
+        if(cSize > 0.3){
+            return 40;
+        }else{
+            return 80;
         }
     }
 
