@@ -2,7 +2,8 @@ Instructions:
 
 Run MotivMain to start program
 -When program runs:
-  black dot will change from left to right depending on json object file
+  * dot will change from left to right depending on lefteyefixationX poloarity json object
+  * The color changes between white and black depending on the polarity of the rightHandY json object
+  * the size of the dot alternates depending on the size of the torsoY json cordinate
 
-Publisher is not currently structured to run with json but will update when able to have it work correctly.
-Right now we just made it so that it can be hard coded in from subscriber using a direct json file and just one json object at a time
+**The program runs on just 3 interations of test json objects
