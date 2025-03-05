@@ -17,7 +17,7 @@ public class MotivMain extends JFrame {
 
         MotivData.getInstance().createCircles();
         MotivData.getInstance().addPropertyChangeListener(mPanel);
-        MotivData.getInstance().setWSize(this.getWidth(), this.getHeight());
+//        MotivData.getInstance().setWSize(this.getWidth(), this.getHeight());
     }
 
     public static void main(String[] args) {

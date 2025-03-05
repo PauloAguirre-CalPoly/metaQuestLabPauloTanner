@@ -12,11 +12,10 @@ public class MotivData extends PropertyChangeSupport {
     private static MotivData instance;
     private int nCircle;
     private List<Circle> ballList;
-    private int wHeight;
-    private int wWidth;
     private ArrayList<String> stream;
     private float eyeFixationX;
-    private float eyeFixationY;
+    private float armHeight;
+    private int binColor;
 
     public MotivData(int nCircle) {
         super(new Object());
@@ -24,7 +23,7 @@ public class MotivData extends PropertyChangeSupport {
         ballList = new ArrayList<>();
         stream = new ArrayList<>();
         this.eyeFixationX = 0;
-        this.eyeFixationY = 0;
+        this.armHeight = 0;
 
     }
 
@@ -50,20 +49,26 @@ public class MotivData extends PropertyChangeSupport {
         ballList.add(new Circle(600, 250));
     }
 
-    public void setWSize(int wWidth, int wHeight) {
-        this.wWidth = wWidth;
-        this.wHeight = wHeight;
+//    public void setWSize(int wWidth, int wHeight) {
+//        this.wWidth = wWidth;
+//        this.wHeight = wHeight;
+//    }
+
+    public void setEyeFixation(float eyeFixationX) {
+        this.eyeFixationX = eyeFixationX;
     }
 
-    public void setEyeFixation(float eyeFixationX, float eyeFixationY) {
-        this.eyeFixationX = eyeFixationX;
-        this.eyeFixationY = eyeFixationY;
+    public void setArmHeight(float armHeight) {
+        this.armHeight = armHeight;
     }
 
     public void computeCircle(Graphics g){
+        computeBinary();
         if(eyeFixationX < 0 ){
+            ballList.get(3).setColor(binColor);
             ballList.get(3).drawCircle(g);
         }else{
+            ballList.get(0).setColor(binColor);
             ballList.get(0).drawCircle(g);
         }
 //        if(eyeFixationY < 0){
@@ -71,6 +76,13 @@ public class MotivData extends PropertyChangeSupport {
 //        }else{
 //            ballList.get(1).drawCircle(g);
 //        }
+    }
+    public void computeBinary(){
+        if(armHeight >= 0){
+            binColor = 0;
+        }else{
+            binColor = 1;
+        }
     }
 
     public List<Circle> getBallList() {

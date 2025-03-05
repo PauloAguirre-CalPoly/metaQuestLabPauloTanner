@@ -48,7 +48,7 @@ public class Publisher implements Runnable{
 					client.publish(TOPIC, message);
 				//counter++;
 				System.out.println("Message published: " + content);
-				Thread.sleep(5000);
+				Thread.sleep(2000);
         }
 			scanner.close();
 		} catch (MqttPersistenceException e) {
