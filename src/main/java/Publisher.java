@@ -1,5 +1,9 @@
 import org.eclipse.paho.client.mqttv3.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 /**
  * This class is a simple MQTT publisher that sends messages to a TOPIC.
  * The broker is test.mosquitto.org and the TOPIC is cal-poly/csc/309.
@@ -22,8 +26,12 @@ public class Publisher implements Runnable{
 			client.connect();
 			System.out.println("Connected to BROKER: " + BROKER);
 			int counter = 0;
-			while (true) {
-				String content = "this is message " + counter;
+			String content = null;
+			File file = new File("testData.json");
+			Scanner scan = new Scanner(file);
+			while (scan.hasNextLine()) {
+				content = scan.nextLine();
+				//String content = "this is message " + counter;
 				MqttMessage message = new MqttMessage(content.getBytes());
 				message.setQos(2);
 				if (client.isConnected())
@@ -32,6 +40,7 @@ public class Publisher implements Runnable{
 				System.out.println("Message published: " + content);
 				Thread.sleep(5000);
         }
+			scan.close();
 		} catch (MqttPersistenceException e) {
 				throw new RuntimeException(e);
 			} catch (MqttSecurityException e) {
@@ -40,7 +49,9 @@ public class Publisher implements Runnable{
 				throw new RuntimeException(e);
 			} catch (MqttException e) {
 				throw new RuntimeException(e);
-			}
+			} catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
 //	public static void main(String[] args) {
 //		try {

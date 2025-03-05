@@ -7,7 +7,7 @@ public class Circle {
     private int diameter;
 
     public Circle(int x, int y) {
-        diameter = 20;
+        diameter = 40;
         this.x = x;
         this.y = y;
     }
