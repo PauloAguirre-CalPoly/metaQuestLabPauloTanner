@@ -1,7 +1,12 @@
 import org.eclipse.paho.client.mqttv3.*;
+import org.json.JSONArray;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -26,21 +31,26 @@ public class Publisher implements Runnable{
 			client.connect();
 			System.out.println("Connected to BROKER: " + BROKER);
 			int counter = 0;
-			String content = null;
+			String content;
 			File file = new File("testData.json");
-			Scanner scan = new Scanner(file);
-			while (scan.hasNextLine()) {
-				content = scan.nextLine();
+//			String jsonData = new String(Files.readAllBytes(Paths.get("testData.json")));
+			Scanner scanner = new Scanner(file);
+			//Scanner scan = new Scanner(file);
+			while (scanner.hasNext()) {
+				content = "";
+				for(int j = 21; j > 0; j--) {
+					content += scanner.nextLine();
+				}
 				//String content = "this is message " + counter;
 				MqttMessage message = new MqttMessage(content.getBytes());
 				message.setQos(2);
 				if (client.isConnected())
 					client.publish(TOPIC, message);
-				counter++;
+				//counter++;
 				System.out.println("Message published: " + content);
 				Thread.sleep(5000);
         }
-			scan.close();
+			scanner.close();
 		} catch (MqttPersistenceException e) {
 				throw new RuntimeException(e);
 			} catch (MqttSecurityException e) {
@@ -50,6 +60,8 @@ public class Publisher implements Runnable{
 			} catch (MqttException e) {
 				throw new RuntimeException(e);
 			} catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

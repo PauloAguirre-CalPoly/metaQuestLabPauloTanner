@@ -31,33 +31,86 @@ public class Subscriber implements MqttCallback, Runnable {
 	private float rightEyeX = 0.03f, rightEyeY = 1.6f, rightEyeZ = 0.0f;
 
 	private final static String BROKER = "tcp://test.mosquitto.org:1883";
-	private final static String TOPIC = "jgs/unity/test";
+	private final static String TOPIC = "Lab5_Tanner_Paulo";
 	private final static String CLIENT_ID = "jgs-subscriber";
 	//public static BufferedWriter out = null;
 
 	@Override
 	public void run() {
-		parseData();
-//        MqttClient client = null;
-//        try {
-//			client = new MqttClient(BROKER, CLIENT_ID);
-//			Subscriber subscriber = new Subscriber();
-//			client.setCallback(subscriber);
-//			client.connect();
-//			System.out.println("Connected to BROKER: " + BROKER);
-//			client.subscribe(TOPIC);
-//			System.out.println("Subscribed to TOPIC: " + TOPIC);
-//        } catch (MqttException e) {
-//            throw new RuntimeException(e);
-//        }
+        MqttClient client = null;
+        try {
+			client = new MqttClient(BROKER, CLIENT_ID);
+			Subscriber subscriber = new Subscriber();
+			client.setCallback(subscriber);
+			client.connect();
+			System.out.println("Connected to BROKER: " + BROKER);
+			client.subscribe(TOPIC);
+			System.out.println("Subscribed to TOPIC: " + TOPIC);
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
+        }
 
 
 	}
 
-	private void parseData() {
+	private float[] computeFixationPoint(float[] leftEyePos, float[] leftGazeDir, float[] rightEyePos, float[] rightGazeDir) {
+		float minDepth = 1.2f;  // Minimum fixation depth
+		float maxDepth = 3.5f;  // Maximum reasonable depth
+
+		// ✅ Compute the average gaze direction (normalized)
+		float avgGazeX = (leftGazeDir[0] + rightGazeDir[0]) / 2;
+		float avgGazeY = (leftGazeDir[1] + rightGazeDir[1]) / 2;
+		float avgGazeZ = (leftGazeDir[2] + rightGazeDir[2]) / 2;
+
+		// ✅ Normalize the gaze direction
+		float magnitude = (float) Math.sqrt(avgGazeX * avgGazeX + avgGazeY * avgGazeY + avgGazeZ * avgGazeZ);
+		if (magnitude == 0) return new float[]{0.0f, 0.0f, 0.0f};  // Prevent division by zero
+		avgGazeX /= magnitude;
+		avgGazeY /= magnitude;
+		avgGazeZ /= magnitude;
+
+		// ✅ Estimate depth dynamically based on gaze forwardness
+		float gazeDepthFactor = minDepth + (avgGazeZ + 1.0f) * (maxDepth - minDepth) / 2.0f;
+
+		// ✅ Compute eye midpoint (average eye height)
+		float eyeMidX = (leftEyePos[0] + rightEyePos[0]) / 2;
+		float eyeMidY = (leftEyePos[1] + rightEyePos[1]) / 2;  // This ensures fixation doesn't drop
+		float eyeMidZ = (leftEyePos[2] + rightEyePos[2]) / 2;
+
+		// ✅ Compute fixation point
+		float fixationX = eyeMidX + avgGazeX * gazeDepthFactor;
+		float fixationY = eyeMidY + avgGazeY * gazeDepthFactor;  // Ensure Y follows gaze
+		float fixationZ = eyeMidZ + avgGazeZ * gazeDepthFactor;
+
+		return new float[]{fixationX, fixationY, fixationZ};
+	}
+
+
+	@Override
+	public void connectionLost(Throwable throwable) {
+		System.out.println("Connection lost: " + throwable.getMessage());
+	}
+	
+	@Override
+	public void messageArrived(String s, MqttMessage mqttMessage) throws IOException {
+		System.out.println("Message arrived. Topic: " + s +
+			" Message: " + new String(mqttMessage.getPayload()));
+		String payLoad = new String(mqttMessage.getPayload());
+		MotivData.getInstance().addData(payLoad);
+		parseData(payLoad);
+
+
+	}
+	
+	@Override
+	public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+		System.out.println("Delivered complete: " + iMqttDeliveryToken.getMessageId());
+    }
+
+	private void parseData(String jsonData) {
 		try {
 			//File file = new File("testData.json");
-			String jsonData = new String(Files.readAllBytes(Paths.get("testData.json")));
+			//String jsonData = new String(Files.readAllBytes(Paths.get("testData.json")));
 			JSONObject obj = new JSONObject(jsonData);
 
 			JSONObject torso = obj.getJSONObject("torso");
@@ -107,64 +160,12 @@ public class Subscriber implements MqttCallback, Runnable {
 			fixationY = fixationPoint[1];
 			fixationZ = fixationPoint[2];
 			MotivData.getInstance().setEyeFixation(fixationX,fixationY);
+			MotivData.getInstance().repaint();
+			Thread.sleep(1000);
 			//add MotivData here
 		} catch (Exception e) {
 			System.out.println("Error parsing JSON: " + e.getMessage());
 		}
 	}
-
-	private float[] computeFixationPoint(float[] leftEyePos, float[] leftGazeDir, float[] rightEyePos, float[] rightGazeDir) {
-		float minDepth = 1.2f;  // Minimum fixation depth
-		float maxDepth = 3.5f;  // Maximum reasonable depth
-
-		// ✅ Compute the average gaze direction (normalized)
-		float avgGazeX = (leftGazeDir[0] + rightGazeDir[0]) / 2;
-		float avgGazeY = (leftGazeDir[1] + rightGazeDir[1]) / 2;
-		float avgGazeZ = (leftGazeDir[2] + rightGazeDir[2]) / 2;
-
-		// ✅ Normalize the gaze direction
-		float magnitude = (float) Math.sqrt(avgGazeX * avgGazeX + avgGazeY * avgGazeY + avgGazeZ * avgGazeZ);
-		if (magnitude == 0) return new float[]{0.0f, 0.0f, 0.0f};  // Prevent division by zero
-		avgGazeX /= magnitude;
-		avgGazeY /= magnitude;
-		avgGazeZ /= magnitude;
-
-		// ✅ Estimate depth dynamically based on gaze forwardness
-		float gazeDepthFactor = minDepth + (avgGazeZ + 1.0f) * (maxDepth - minDepth) / 2.0f;
-
-		// ✅ Compute eye midpoint (average eye height)
-		float eyeMidX = (leftEyePos[0] + rightEyePos[0]) / 2;
-		float eyeMidY = (leftEyePos[1] + rightEyePos[1]) / 2;  // This ensures fixation doesn't drop
-		float eyeMidZ = (leftEyePos[2] + rightEyePos[2]) / 2;
-
-		// ✅ Compute fixation point
-		float fixationX = eyeMidX + avgGazeX * gazeDepthFactor;
-		float fixationY = eyeMidY + avgGazeY * gazeDepthFactor;  // Ensure Y follows gaze
-		float fixationZ = eyeMidZ + avgGazeZ * gazeDepthFactor;
-
-		return new float[]{fixationX, fixationY, fixationZ};
-	}
-
-
-	@Override
-	public void connectionLost(Throwable throwable) {
-		System.out.println("Connection lost: " + throwable.getMessage());
-	}
-	
-	@Override
-	public void messageArrived(String s, MqttMessage mqttMessage) throws IOException {
-		System.out.println("Message arrived. Topic: " + s +
-			" Message: " + new String(mqttMessage.getPayload()));
-		String payLoad = new String(mqttMessage.getPayload());
-		MotivData.getInstance().addData(payLoad);
-		//parseData(payLoad);
-
-
-	}
-	
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-		System.out.println("Delivered complete: " + iMqttDeliveryToken.getMessageId());
-    }
 
 }

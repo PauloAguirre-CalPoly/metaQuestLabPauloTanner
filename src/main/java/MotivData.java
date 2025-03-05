@@ -77,4 +77,8 @@ public class MotivData extends PropertyChangeSupport {
         return ballList;
     }
 
+    public void repaint() {
+        firePropertyChange("repaint", null, null);
+    }
+
 }
