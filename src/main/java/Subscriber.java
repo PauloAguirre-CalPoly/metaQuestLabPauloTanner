@@ -1,7 +1,14 @@
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
 
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * This class is a simple MQTT subscriber that listens to a TOPIC.
@@ -30,24 +37,28 @@ public class Subscriber implements MqttCallback, Runnable {
 
 	@Override
 	public void run() {
-        MqttClient client = null;
-        try {
-			client = new MqttClient(BROKER, CLIENT_ID);
-			Subscriber subscriber = new Subscriber();
-			client.setCallback(subscriber);
-			client.connect();
-			System.out.println("Connected to BROKER: " + BROKER);
-			client.subscribe(TOPIC);
-			System.out.println("Subscribed to TOPIC: " + TOPIC);
-        } catch (MqttException e) {
-            throw new RuntimeException(e);
-        }
+		parseData();
+//        MqttClient client = null;
+//        try {
+//			client = new MqttClient(BROKER, CLIENT_ID);
+//			Subscriber subscriber = new Subscriber();
+//			client.setCallback(subscriber);
+//			client.connect();
+//			System.out.println("Connected to BROKER: " + BROKER);
+//			client.subscribe(TOPIC);
+//			System.out.println("Subscribed to TOPIC: " + TOPIC);
+//        } catch (MqttException e) {
+//            throw new RuntimeException(e);
+//        }
+
 
 	}
 
-	private void parseData(String json) {
+	private void parseData() {
 		try {
-			JSONObject obj = new JSONObject(json);
+			//File file = new File("testData.json");
+			String jsonData = new String(Files.readAllBytes(Paths.get("testData.json")));
+			JSONObject obj = new JSONObject(jsonData);
 
 			JSONObject torso = obj.getJSONObject("torso");
 			torsoX = (float) torso.getDouble("x");
@@ -146,7 +157,8 @@ public class Subscriber implements MqttCallback, Runnable {
 			" Message: " + new String(mqttMessage.getPayload()));
 		String payLoad = new String(mqttMessage.getPayload());
 		MotivData.getInstance().addData(payLoad);
-		parseData(payLoad);
+		//parseData(payLoad);
+
 
 	}
 	

@@ -61,16 +61,16 @@ public class MotivData extends PropertyChangeSupport {
     }
 
     public void computeCircle(Graphics g){
-        if(eyeFixationX < 0){
+        if(eyeFixationX < 0 ){
             ballList.get(3).drawCircle(g);
         }else{
             ballList.get(0).drawCircle(g);
         }
-        if(eyeFixationY < 0){
-            ballList.get(2).drawCircle(g);
-        }else{
-            ballList.get(1).drawCircle(g);
-        }
+//        if(eyeFixationY < 0){
+//            ballList.get(2).drawCircle(g);
+//        }else{
+//            ballList.get(1).drawCircle(g);
+//        }
     }
 
     public List<Circle> getBallList() {
